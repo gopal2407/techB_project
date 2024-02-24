@@ -79,6 +79,17 @@ def task(request):
     return Response(data=serializer.data, status=200)
 
 
+@api_view(http_method_names=['GET'])
+def search_by_task(request, pk):
+    objs = Task.objects.filter(name__icontains=pk)
+    if request.method == 'GET':
+        serializer = TaskSerializer(objs, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=200)
+        return Response(data=serializer.errors, status=400)
+
+
 @api_view(http_method_names=['GET', 'PUT', 'PATCH', 'DELETE'])
 def task_details(request, pk):
     obj = get_object_or_404(Task, pk=pk)
